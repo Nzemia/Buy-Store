@@ -79,7 +79,7 @@ async function FeaturedProducts() {
       </div>
 
       {/** JSON View, just for testing purposes*/}
-      <pre>{JSON.stringify(featuredProducts, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(featuredProducts, null, 2)}</pre> */}
     </div>
   );
 }
