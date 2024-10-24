@@ -3,7 +3,6 @@ import { Product } from "@/components/Product";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { delay } from "@/lib/utils";
-import { getWixClient } from "@/lib/wix-client.base";
 import { getCollectionBySlug } from "@/wix-api/collection";
 import { queryProducts } from "@/wix-api/products";
 import { ArrowRight } from "lucide-react";
