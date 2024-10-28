@@ -17,6 +17,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import AddToCartButton from "@/components/AddToCartButton";
+import { Button } from "@/components/ui/button";
 
 interface ProductDetailsProps {
   product: products.Product;
@@ -118,9 +119,13 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             product={product}
             selectedOptions={selectedOptions}
             quantity={quantity}
+            disabled={availableQuantityExceeded || quantity < 1}
+            className="w-full"
           />
         ) : (
-          "Out of stock"
+          <Button variant="destructive" disabled className="font-bold w-full">
+            Item is out of stock
+          </Button>
         )}
 
         {/**more information about the product */}
