@@ -3,6 +3,7 @@ import { Product } from "@/components/Product";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { delay } from "@/lib/utils";
+import { getWixServerClient } from "@/lib/wix-client.server";
 import { getCollectionBySlug } from "@/wix-api/collection";
 import { queryProducts } from "@/wix-api/products";
 import { ArrowRight } from "lucide-react";
@@ -55,11 +56,13 @@ export default function Home() {
 async function FeaturedProducts() {
   // await delay(1000);
 
-  const collection = await getCollectionBySlug("featured-products");
+  const wixClient = getWixServerClient();
+
+  const collection = await getCollectionBySlug(wixClient, "featured-products");
 
   if (!collection?._id) return null;
 
-  const featuredProducts = await queryProducts({
+  const featuredProducts = await queryProducts(wixClient, {
     collectionIds: collection._id,
   });
 

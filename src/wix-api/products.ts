@@ -1,4 +1,4 @@
-import { getWixClient } from "@/lib/wix-client.base";
+import { getWixClient, WixClient } from "@/lib/wix-client.base";
 import { cache } from "react";
 
 type ProductsSort = "last_updated" | "price_asc" | "price_desc";
@@ -8,11 +8,11 @@ interface QueryProductsFilter {
   sort?: ProductsSort;
 }
 
-export async function queryProducts({
-  collectionIds,
-  sort = "last_updated",
-}: QueryProductsFilter) {
-  const wixClient = getWixClient();
+export async function queryProducts(
+  wixClient: WixClient,
+  { collectionIds, sort = "last_updated" }: QueryProductsFilter,
+) {
+  // const wixClient = getWixClient();
 
   let query = wixClient.products.queryProducts();
 
@@ -42,8 +42,8 @@ export async function queryProducts({
 }
 
 //deduplicate components to server;; for metadata
-export const getProductBySlug = cache(async (slug: string) => {
-  const wixClient = getWixClient();
+export const getProductBySlug = cache(async (wixClient: WixClient, slug: string) => {
+  // const wixClient = getWixClient();
 
   const { items } = await wixClient.products
     .queryProducts()
