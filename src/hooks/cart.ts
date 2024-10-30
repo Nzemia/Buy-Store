@@ -1,6 +1,13 @@
 import { wixBrowserClient } from "@/lib/wix-client.browser";
-import { addToCart, AddToCartValues, getCart } from "@/wix-api/cart";
 import {
+  addToCart,
+  AddToCartValues,
+  getCart,
+  updateCartItemQuantity,
+  UpdateCartItemQuantityValues,
+} from "@/wix-api/cart";
+import {
+  MutationKey,
   QueryKey,
   useMutation,
   useQuery,
@@ -37,6 +44,50 @@ export function useAddItemToCart() {
         variant: "destructive",
         description: "Failed to add item to cart. Please try again.",
       });
+    },
+  });
+}
+
+export function useUpdateCartItemQuantity() {
+  const queryClient = useQueryClient();
+
+  const { toast } = useToast();
+
+  const mutationKey: MutationKey = ["useUpdateCartItemQuantity"];
+
+  return useMutation({
+    mutationKey,
+    mutationFn: (values: UpdateCartItemQuantityValues) =>
+      updateCartItemQuantity(wixBrowserClient, values),
+    onMutate: async ({ productId, newQuantity }) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousState =
+        queryClient.getQueryData<currentCart.Cart>(queryKey);
+
+      queryClient.setQueryData<currentCart.Cart>(queryKey, (oldData) => ({
+        ...oldData,
+        lineItems: oldData?.lineItems?.map((lineItem) =>
+          lineItem._id === productId
+            ? { ...lineItem, quantity: newQuantity }
+            : lineItem,
+        ),
+      }));
+
+      return { previousState };
+    },
+    onError(error, variables, context) {
+      queryClient.setQueryData(queryKey, context?.previousState);
+      console.log(error);
+      toast({
+        variant: "destructive",
+        description: "Failed to update item quantity. Please try again!",
+      });
+    },
+    onSettled() {
+      if (queryClient.isMutating({ mutationKey }) === 1) {
+        queryClient.invalidateQueries({ queryKey });
+      }
     },
   });
 }
