@@ -3,6 +3,7 @@ import {
   addToCart,
   AddToCartValues,
   getCart,
+  removeCartItem,
   updateCartItemQuantity,
   UpdateCartItemQuantityValues,
 } from "@/wix-api/cart";
@@ -88,6 +89,42 @@ export function useUpdateCartItemQuantity() {
       if (queryClient.isMutating({ mutationKey }) === 1) {
         queryClient.invalidateQueries({ queryKey });
       }
+    },
+  });
+}
+
+export function useRemoveCartItem() {
+  const queryClient = useQueryClient();
+
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: (productId: string) =>
+      removeCartItem(wixBrowserClient, productId),
+    onMutate: async (productId) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousState =
+        queryClient.getQueryData<currentCart.Cart>(queryKey);
+
+      queryClient.setQueryData<currentCart.Cart>(queryKey, (oldData) => ({
+        ...oldData,
+        lineItems: oldData?.lineItems?.filter(
+          (lineItem) => lineItem._id !== productId,
+        ),
+      }));
+      return { previousState };
+    },
+    onError(error, variables, context) {
+      queryClient.setQueryData(queryKey, context?.previousState);
+      console.log(error);
+      toast({
+        variant: "destructive",
+        description: "Something went wrong. Please try again!",
+      });
+    },
+    onSettled() {
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 }

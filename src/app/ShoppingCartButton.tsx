@@ -11,10 +11,11 @@ import WixImageResize from "@/components/WixImageResize";
 import {
   useAddItemToCart,
   useCart,
+  useRemoveCartItem,
   useUpdateCartItemQuantity,
 } from "@/hooks/cart";
 import { currentCart } from "@wix/ecom";
-import { Loader2, ShoppingCart } from "lucide-react";
+import { Loader2, ShoppingCart, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -58,10 +59,14 @@ export default function ShoppingCartButton({
             </SheetTitle>
           </SheetHeader>
 
-          <div className="flex grow flex-col space-y-5 overflow-y-auto">
+          <div className="flex grow flex-col space-y-5 overflow-y-auto pt-1">
             <ul className="space-y-5">
               {cartQuery.data?.lineItems?.map((item) => (
-                <ShoppingCartItem key={item._id} item={item} />
+                <ShoppingCartItem
+                  key={item._id}
+                  item={item}
+                  onProductLinkClicked={() => setSheetOpen(false)}
+                />
               ))}
             </ul>
 
@@ -73,30 +78,29 @@ export default function ShoppingCartButton({
               <p className="text-destructive">{cartQuery.error.message}</p>
             )}
 
-            {!cartQuery.isPending && !cartQuery.data?.lineItems
-              ? length && (
-                  <div className="flex grow items-center justify-center text-center">
-                    <div className="space-y-1.5">
-                      <p className="text-lg font-semibold">
-                        Your cart is empty!
-                      </p>
-                      <Link
-                        href="/shop"
-                        className="text-primary hover:underline"
-                        onClick={() => setSheetOpen(false)}
-                      >
-                        Start shopping now
-                      </Link>
-                    </div>
-                  </div>
-                )
-              : null}
+            {!cartQuery.isPending && !cartQuery.data?.lineItems?.length && (
+              <div className="flex grow items-center justify-center text-center">
+                <div className="space-y-1.5">
+                  <p className="text-lg font-semibold">Your cart is empty</p>
+                  <Link
+                    href="/shop"
+                    className="text-primary hover:underline"
+                    onClick={() => setSheetOpen(false)}
+                  >
+                    Start shopping now
+                  </Link>
+                </div>
+              </div>
+            )}
 
             {/* <pre>{JSON.stringify(cartQuery.data, null, 2)}</pre> */}
           </div>
+
+          <hr />
+
           <div className="flex items-center justify-between gap-5">
             <div className="space-y-0.5">
-              <p className="text-sm">Subtotal amount</p>
+              <p className="text-sm">Subtotal amount:</p>
               <p className="font-bold">
                 {/**@ts-expect-error */}
                 {cartQuery.data?.subtotal?.formattedConvertedAmount}
@@ -118,11 +122,18 @@ export default function ShoppingCartButton({
 
 interface ShoppingCartItemProps {
   item: currentCart.LineItem;
+  onProductLinkClicked: () => void;
 }
-function ShoppingCartItem({ item }: ShoppingCartItemProps) {
+function ShoppingCartItem({
+  item,
+  onProductLinkClicked,
+}: ShoppingCartItemProps) {
   const slug = item.url?.split("/").pop();
 
   const updateQuantityMutation = useUpdateCartItemQuantity();
+
+  const removeItemMutation = useRemoveCartItem();
+
   const productId = item._id;
   if (!productId) return null;
 
@@ -133,18 +144,26 @@ function ShoppingCartItem({ item }: ShoppingCartItemProps) {
 
   return (
     <li className="flex items-center gap-3">
-      <Link href={`/products/${slug}`}>
-        <WixImageResize
-          mediaIdentifier={item.image}
-          alt={item.productName?.translated || "Product Image"}
-          width={110}
-          height={110}
-          className="flex-none bg-secondary"
-        />
-      </Link>
+      <div className="relative size-fit flex-none">
+        <Link href={`/products/${slug}`} onClick={onProductLinkClicked}>
+          <WixImageResize
+            mediaIdentifier={item.image}
+            alt={item.productName?.translated || "Product Image"}
+            width={110}
+            height={110}
+            className="flex-none bg-secondary"
+          />
+        </Link>
+        <button
+          className="absolute -right-1 -top-1 rounded-full border bg-red-500 p-0.5 text-white"
+          onClick={() => removeItemMutation.mutate(productId)}
+        >
+          <X className="size-3" />
+        </button>
+      </div>
 
       <div className="space-y-1.5 text-sm">
-        <Link href={`/products/${slug}`}>
+        <Link href={`/products/${slug}`} onClick={onProductLinkClicked}>
           <p className="font-bold">
             {item.productName?.translated || "Product"}
           </p>

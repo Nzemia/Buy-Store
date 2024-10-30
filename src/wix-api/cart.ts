@@ -69,3 +69,7 @@ export async function updateCartItemQuantity(wixClient: WixClient, { productId, 
   ])
   
 }
+
+export async function removeCartItem(wixClient: WixClient, productId: string) {
+  return wixClient.currentCart.removeLineItemsFromCurrentCart([productId])
+}
