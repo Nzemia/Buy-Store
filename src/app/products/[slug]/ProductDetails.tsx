@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/accordion";
 import AddToCartButton from "@/components/AddToCartButton";
 import { Button } from "@/components/ui/button";
+import BackInStockNotificationButton from "@/components/BackInStockNotificationButton";
 
 interface ProductDetailsProps {
   product: products.Product;
@@ -123,9 +124,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             className="w-full"
           />
         ) : (
-          <Button variant="destructive" disabled className="font-bold w-full">
-            Item is out of stock
-          </Button>
+          <BackInStockNotificationButton product={product} selectedOptions={selectedOptions} className="w-full" />
         )}
 
         {/**more information about the product */}
