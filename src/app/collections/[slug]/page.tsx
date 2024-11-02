@@ -1,4 +1,3 @@
-
 import PaginationBar from "@/components/PaginationBar";
 import { Product } from "@/components/Product";
 import { Skeleton } from "@/components/ui/skeleton";

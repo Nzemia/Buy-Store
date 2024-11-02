@@ -1,22 +1,35 @@
 import { getWixClient, WixClient } from "@/lib/wix-client.base";
 import { cache } from "react";
 
-type ProductsSort = "last_updated" | "price_asc" | "price_desc";
+export type ProductsSort = "last_updated" | "price_asc" | "price_desc";
 
 interface QueryProductsFilter {
+  q?: string;
   collectionIds?: string[] | string;
   sort?: ProductsSort;
-  limit?: number;
+  priceMin?: number;
+  priceMax?: number;
   skip?: number;
+  limit?: number;
 }
 
 export async function queryProducts(
   wixClient: WixClient,
-  { collectionIds, sort = "last_updated", skip, limit }: QueryProductsFilter,
+  { q,
+    collectionIds,
+    sort = "last_updated",
+    priceMin,
+    priceMax,
+    skip,
+    limit, }: QueryProductsFilter,
 ) {
   // const wixClient = getWixClient();
 
   let query = wixClient.products.queryProducts();
+
+  if (q) {
+    query=query.startsWith("name", q);
+  }
 
   const collectionIdsArray = collectionIds
     ? Array.isArray(collectionIds)
@@ -42,6 +55,14 @@ export async function queryProducts(
 
   if (limit) query = query.limit(limit);
   if (skip) query = query.skip(skip);
+
+  if (priceMin) {
+    query = query.ge("priceData.price", priceMin);
+  }
+
+  if (priceMax) {
+    query = query.le("priceData.price", priceMax);
+  }
 
   return query.find();
 }

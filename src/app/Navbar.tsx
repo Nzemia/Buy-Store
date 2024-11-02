@@ -8,6 +8,7 @@ import UserButton from "@/components/UserButton";
 import { getLoggedInMember } from "@/wix-api/members";
 import { getCollections } from "@/wix-api/collection";
 import MainNavigation from "./MainNavigation";
+import SearchField from "@/components/SearchField";
 
 export default async function Navbar() {
   const wixClient = getWixServerClient();
@@ -28,10 +29,13 @@ export default async function Navbar() {
             <Image src={logo} alt="logo" width={40} height={40} />
             <span className="text-xl font-bold">Buy Store</span>
           </Link>
+
+          {/* Navigation menu*/}
+          <MainNavigation collections={collections} />
         </div>
 
-        {/* Navigation menu*/}
-        <MainNavigation collections={collections} />
+        {/**search */}
+        <SearchField className="hidden md:block max-w-96" />
 
         <div className="flex items-center justify-center gap-5">
           <UserButton loggedInMember={loggedInMember} />
