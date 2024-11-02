@@ -6,11 +6,13 @@ type ProductsSort = "last_updated" | "price_asc" | "price_desc";
 interface QueryProductsFilter {
   collectionIds?: string[] | string;
   sort?: ProductsSort;
+  limit?: number;
+  skip?: number;
 }
 
 export async function queryProducts(
   wixClient: WixClient,
-  { collectionIds, sort = "last_updated" }: QueryProductsFilter,
+  { collectionIds, sort = "last_updated", skip, limit }: QueryProductsFilter,
 ) {
   // const wixClient = getWixClient();
 
@@ -38,24 +40,29 @@ export async function queryProducts(
       break;
   }
 
+  if (limit) query = query.limit(limit);
+  if (skip) query = query.skip(skip);
+
   return query.find();
 }
 
 //deduplicate components to server;; for metadata
-export const getProductBySlug = cache(async (wixClient: WixClient, slug: string) => {
-  // const wixClient = getWixClient();
+export const getProductBySlug = cache(
+  async (wixClient: WixClient, slug: string) => {
+    // const wixClient = getWixClient();
 
-  const { items } = await wixClient.products
-    .queryProducts()
-    .eq("slug", slug)
-    .limit(1)
-    .find();
+    const { items } = await wixClient.products
+      .queryProducts()
+      .eq("slug", slug)
+      .limit(1)
+      .find();
 
-  const product = items[0];
+    const product = items[0];
 
-  if (!product || !product.visible) {
-    return null;
-  }
+    if (!product || !product.visible) {
+      return null;
+    }
 
-  return product;
-});
+    return product;
+  },
+);
