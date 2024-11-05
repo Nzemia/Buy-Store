@@ -20,7 +20,9 @@ import { useEffect, useState } from "react";
 interface MobileMenuProps {
   collections: collections.Collection[];
   loggedInMember: members.Member | null;
-}
+} 
+
+
 
 export default function MobileMenu({
   collections,
