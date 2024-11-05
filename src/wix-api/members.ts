@@ -35,6 +35,7 @@ export async function updateMemberInfo(
     contact: {
       firstName,
       lastName,
+      
     },
   });
 }
