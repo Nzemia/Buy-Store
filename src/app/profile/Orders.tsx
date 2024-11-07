@@ -30,7 +30,7 @@ export default function Orders() {
         <p className="text-destructive">Error fetching orders</p>
       )}
       {status === "success" && !orders.length && !hasNextPage && (
-        <p>No orders yet</p>
+        <p>You don&apos;t have any orders yet. Start shopping and you&apos;ll see them here.</p>
       )}
       {orders.map((order) => (
         <Order key={order.number} order={order} />
