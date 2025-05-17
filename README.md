@@ -10,9 +10,6 @@ npx --legacy-peer-deps shadcn@latest add accordion button checkbox dialog dropdo
 
 ## Wix Studio links
 
-Review button in email
-http://localhost:3000/products/id/${create-review-request-1.productsToReview>id}?createReview=true
-
 https://www.wix.com/studio 
 https://www.wix.com/intro/headless 
 
